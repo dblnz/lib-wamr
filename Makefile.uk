@@ -40,13 +40,13 @@ $(eval $(call addlib_s,libwamr,$(CONFIG_LIBWAMR)))
 # Sources
 ################################################################################
 # Sept 9th commit
-LIBWAMR_VERSION=bc762fe9e2cf2d26a0cde42931c4b6ed79860047
-LIBWAMR_URL=https://github.com/intel/wasm-micro-runtime/archive/$(LIBWAMR_VERSION).zip
+LIBWAMR_VERSION=WAMR-2.2.0
+LIBWAMR_URL=https://github.com/bytecodealliance/wasm-micro-runtime/archive/refs/tags/$(LIBWAMR_VERSION).tar.gz
 
 LIBWAMR_DIR=wasm-micro-runtime-$(LIBWAMR_VERSION)
 LIBWAMR_PATCHDIR=$(LIBWAMR_BASE)/patches
 
-$(eval $(call fetchas,libwamr,$(LIBWAMR_URL),$(LIBWAMR_VERSION).zip))
+$(eval $(call fetchas,libwamr,$(LIBWAMR_URL),$(LIBWAMR_VERSION).tar.gz))
 $(eval $(call patch,libwamr,$(LIBWAMR_PATCHDIR),wasm-micro-runtime-$(LIBWAMR_VERSION)))
 
 ################################################################################
