@@ -17,16 +17,12 @@
 #ifndef _BH_PLATFORM_H
 #define _BH_PLATFORM_H
 
-#include "bh_config.h"
-#include "bh_types.h"
-#include "bh_memory.h"
 #include <inttypes.h>
 #include <stdbool.h>
 #include <assert.h>
 #include <time.h>
 #include <string.h>
 #include <stdio.h>
-#include <uk/essentials.h>
 
 #ifndef __cplusplus
 int snprintf(char *buffer, size_t count, const char *format, ...);
@@ -38,6 +34,8 @@ extern "C" {
 
 typedef uint64_t uint64;
 typedef int64_t int64;
+typedef uint32_t uint32;
+typedef int32_t int32;
 
 extern void DEBUGME(void);
 
