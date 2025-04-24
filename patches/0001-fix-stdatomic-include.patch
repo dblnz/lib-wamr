@@ -1,0 +1,26 @@
+diff --git a/core/shared/platform/include/platform_api_extension.h b/core/shared/platform/include/platform_api_extension.h
+index 9e64c83..db55d87 100644
+--- a/core/shared/platform/include/platform_api_extension.h
++++ b/core/shared/platform/include/platform_api_extension.h
+@@ -127,7 +127,20 @@ bool
+ #include <stdbool.h>
+ #include <stddef.h>
+ #include <stdint.h>
++
++#ifdef __has_include
++#if __has_include(<stdatomic.h>)
+ #include <stdatomic.h>
++#define HAS_STD_ATOMIC 1
++#endif
++#endif
++
++#ifndef HAS_STD_ATOMIC
++/* Fallback for platforms without stdatomic.h */
++typedef int atomic_int;
++#define atomic_store(ptr, val) (*(ptr) = (val))
++#define atomic_load(ptr) (*(ptr))
++#define atomic_compare_exchange_strong(ptr, expected, desired) (*(expected) == (*(ptr)) ? (*(ptr) = (desired), 1) : (*(expected) = *(ptr), 0))
++#endif
+ 
+ #endif /* end of os_atomic_thread_fence */
+ 
