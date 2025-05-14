@@ -1,0 +1,18 @@
+diff --git a/core/shared/mem-alloc/ems/ems_gc_internal.h b/core/shared/mem-alloc/ems/ems_gc_internal.h
+index 9e64c83..db55d87 100644
+--- a/core/shared/mem-alloc/ems/ems_gc_internal.h
++++ b/core/shared/mem-alloc/ems/ems_gc_internal.h
+@@ -11,6 +11,13 @@
+ #include "ems_alloc.h"
+ #include "bh_queue.h"
+ 
++/* Fix for missing uint8 type in Unikraft */
++#ifndef uint8
++#include <stdint.h>
++typedef uint8_t uint8;
++typedef uint16_t uint16;
++#endif
++
+ #ifdef __cplusplus
+ extern "C" {
+ #endif

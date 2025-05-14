@@ -1,0 +1,22 @@
+diff --git a/core/shared/platform/include/platform_common.h b/core/shared/platform/include/platform_common.h
+index 7c94a35..b8a0f35 100644
+--- a/core/shared/platform/include/platform_common.h
++++ b/core/shared/platform/include/platform_common.h
+@@ -94,6 +94,16 @@ BH_FREE(void *ptr);
+ #define offsetof(Type, field) ((size_t)(&((Type *)0)->field))
+ #endif
+ 
++/* Undefine BYTE_ORDER, BIG_ENDIAN, and LITTLE_ENDIAN if already defined
++   to avoid conflicts with lwIP's definitions */
++#ifdef BYTE_ORDER
++#undef BYTE_ORDER
++#endif
++#ifdef BIG_ENDIAN
++#undef BIG_ENDIAN
++#endif
++#ifdef LITTLE_ENDIAN
++#undef LITTLE_ENDIAN
++#endif
++
+ typedef uint8_t uint8;
+ typedef int8_t int8;
