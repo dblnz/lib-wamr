@@ -57,12 +57,15 @@ LIBWAMR_SRC=$(LIBWAMR_ORIGIN)/$(LIBWAMR_DIR)
 ################################################################################
 # Library includes
 ################################################################################
-CINCLUDES-$(CONFIG_LIBWAMR) += -I$(LIBWAMR_BASE)/include \
-						-I$(LIBWAMR_SRC)/core/iwasm/include   \
+CINCLUDES-$(CONFIG_LIBWAMR) += -I$(LIBWAMR_SRC)/core/iwasm/include   \
+						-I$(LIBWAMR_SRC)/core/shared/platform/include \
 						-I$(LIBWAMR_SRC)/core/shared/platform/include \
 						-I$(LIBWAMR_SRC)/core/shared/platform/common/libc-util \
 						-I$(LIBWAMR_SRC)/core/shared/platform/ego              \
-						-I$(LIBWAMR_SRC)/core/shared/utils			  \
+						-I$(LIBWAMR_SRC)/core/shared/utils			\
+						-I$(LIBWAMR_SRC)/core/shared/utils/uncommon \
+						-I$(LIBWAMR_BASE)/include \
+
 
 ################################################################################
 # Library flags
@@ -77,7 +80,7 @@ LIBWAMR_SUPPRESS_FLAGS += -Wno-implicit-function-declaration \
 			  -Wno-cast-function-type            \
 			  -Wno-implicit-fallthrough
 
-LIBWAMR_CFLAGS-y += -DNVALGRIND $(LIBWAMR_SUPPRESS_FLAGS)
+LIBWAMR_CFLAGS-y += -DNVALGRIND $(LIBWAMR_SUPPRESS_FLAGS) -DWASM_ENABLE_INTERP=1 -DWASM_ENABLE_AOT=1
 LIBWAMR_CXXFLAGS-y += -DNVALGRIND $(LIBWAMR_SUPPRESS_FLAGS)
 
 ################################################################################
@@ -112,57 +115,6 @@ LIBWAMR_SRCS-$(CONFIG_LIBWAMR_MAIN_FUNCTION) += $(LIBWAMR_BASE)/glue.c
 # MINE #
 LIBWAMR_MAIN_FLAGS-y += -Dmain=wamr_main
 LIBWAMR_SRCS-y += $(LIBWAMR_SRC)/product-mini/platforms/linux/main.c
-LIBWAMR_SRCS-y += $(LIBWAMR_SRC)/core/shared/platform/linux/platform_init.c
-LIBWAMR_SRCS-y += $(LIBWAMR_SRC)/core/shared/platform/common/posix/posix_blocking_op.c
-LIBWAMR_SRCS-y += $(LIBWAMR_SRC)/core/shared/platform/common/posix/posix_clock.c
-LIBWAMR_SRCS-y += $(LIBWAMR_SRC)/core/shared/platform/common/posix/posix_file.c
-LIBWAMR_SRCS-y += $(LIBWAMR_SRC)/core/shared/platform/common/posix/posix_malloc.c
-LIBWAMR_SRCS-y += $(LIBWAMR_SRC)/core/shared/platform/common/posix/posix_memmap.c
-LIBWAMR_SRCS-y += $(LIBWAMR_SRC)/core/shared/platform/common/posix/posix_sleep.c
-LIBWAMR_SRCS-y += $(LIBWAMR_SRC)/core/shared/platform/common/posix/posix_socket.c
-LIBWAMR_SRCS-y += $(LIBWAMR_SRC)/core/shared/platform/common/posix/posix_thread.c
-LIBWAMR_SRCS-y += $(LIBWAMR_SRC)/core/shared/platform/common/posix/posix_time.c
-LIBWAMR_SRCS-y += $(LIBWAMR_SRC)/core/shared/platform/common/libc-util/libc_errno.c
-LIBWAMR_SRCS-y += $(LIBWAMR_SRC)/core/shared/mem-alloc/ems/ems_alloc.c
-LIBWAMR_SRCS-y += $(LIBWAMR_SRC)/core/shared/mem-alloc/ems/ems_gc.c
-LIBWAMR_SRCS-y += $(LIBWAMR_SRC)/core/shared/mem-alloc/ems/ems_hmu.c
-LIBWAMR_SRCS-y += $(LIBWAMR_SRC)/core/shared/mem-alloc/ems/ems_kfc.c
-LIBWAMR_SRCS-y += $(LIBWAMR_SRC)/core/shared/mem-alloc/mem_alloc.c
-LIBWAMR_SRCS-y += $(LIBWAMR_SRC)/core/shared/utils/bh_assert.c
-LIBWAMR_SRCS-y += $(LIBWAMR_SRC)/core/shared/utils/bh_bitmap.c
-LIBWAMR_SRCS-y += $(LIBWAMR_SRC)/core/shared/utils/bh_common.c
-LIBWAMR_SRCS-y += $(LIBWAMR_SRC)/core/shared/utils/bh_hashmap.c
-LIBWAMR_SRCS-y += $(LIBWAMR_SRC)/core/shared/utils/bh_leb128.c
-LIBWAMR_SRCS-y += $(LIBWAMR_SRC)/core/shared/utils/bh_list.c
-LIBWAMR_SRCS-y += $(LIBWAMR_SRC)/core/shared/utils/bh_log.c
-LIBWAMR_SRCS-y += $(LIBWAMR_SRC)/core/shared/utils/bh_queue.c
-LIBWAMR_SRCS-y += $(LIBWAMR_SRC)/core/shared/utils/bh_vector.c
-LIBWAMR_SRCS-y += $(LIBWAMR_SRC)/core/shared/utils/runtime_timer.c
-LIBWAMR_SRCS-y += $(LIBWAMR_SRC)/core/iwasm/libraries/libc-builtin/libc_builtin_wrapper.c
-LIBWAMR_SRCS-y += $(LIBWAMR_SRC)/core/iwasm/libraries/libc-wasi/libc_wasi_wrapper.c
-LIBWAMR_SRCS-y += $(LIBWAMR_SRC)/core/iwasm/libraries/libc-wasi/sandboxed-system-primitives/src/blocking_op.c
-LIBWAMR_SRCS-y += $(LIBWAMR_SRC)/core/iwasm/libraries/libc-wasi/sandboxed-system-primitives/src/posix.c
-LIBWAMR_SRCS-y += $(LIBWAMR_SRC)/core/iwasm/libraries/libc-wasi/sandboxed-system-primitives/src/random.c
-LIBWAMR_SRCS-y += $(LIBWAMR_SRC)/core/iwasm/libraries/libc-wasi/sandboxed-system-primitives/src/str.c
-LIBWAMR_SRCS-y += $(LIBWAMR_SRC)/core/iwasm/common/wasm_application.c
-LIBWAMR_SRCS-y += $(LIBWAMR_SRC)/core/iwasm/common/wasm_blocking_op.c
-LIBWAMR_SRCS-y += $(LIBWAMR_SRC)/core/iwasm/common/wasm_c_api.c
-LIBWAMR_SRCS-y += $(LIBWAMR_SRC)/core/iwasm/common/wasm_exec_env.c
-LIBWAMR_SRCS-y += $(LIBWAMR_SRC)/core/iwasm/common/wasm_loader_common.c
-LIBWAMR_SRCS-y += $(LIBWAMR_SRC)/core/iwasm/common/wasm_memory.c
-LIBWAMR_SRCS-y += $(LIBWAMR_SRC)/core/iwasm/common/wasm_native.c
-LIBWAMR_SRCS-y += $(LIBWAMR_SRC)/core/iwasm/common/wasm_runtime_common.c
-LIBWAMR_SRCS-y += $(LIBWAMR_SRC)/core/iwasm/common/wasm_shared_memory.c
-
-LIBWAMR_SRCS-y += $(LIBWAMR_SRC)/core/iwasm/common/arch/invokeNative_em64_simd.s
-LIBWAMR_SRCS-y += $(LIBWAMR_SRC)/core/iwasm/interpreter/wasm_interp_fast.c
-LIBWAMR_SRCS-y += $(LIBWAMR_SRC)/core/iwasm/interpreter/wasm_loader.c
-LIBWAMR_SRCS-y += $(LIBWAMR_SRC)/core/iwasm/interpreter/wasm_runtime.c
-LIBWAMR_SRCS-y += $(LIBWAMR_SRC)/core/iwasm/aot/aot_intrinsic.c
-LIBWAMR_SRCS-y += $(LIBWAMR_SRC)/core/iwasm/aot/aot_loader.c
-LIBWAMR_SRCS-y += $(LIBWAMR_SRC)/core/iwasm/aot/aot_perf_map.c
-LIBWAMR_SRCS-y += $(LIBWAMR_SRC)/core/iwasm/aot/aot_runtime.c
-LIBWAMR_SRCS-y += $(LIBWAMR_SRC)/core/iwasm/aot/arch/aot_reloc_x86_64.c
 LIBWAMR_SRCS-y += $(LIBWAMR_SRC)/core/shared/utils/uncommon/bh_getopt.c
 LIBWAMR_SRCS-y += $(LIBWAMR_SRC)/core/shared/utils/uncommon/bh_read_file.c
 LIBWAMR_SRCS-y += $(LIBWAMR_SRC)/core/shared/platform/linux/platform_init.c
