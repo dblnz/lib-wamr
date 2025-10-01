@@ -1,0 +1,136 @@
+################################################################################
+# Library registration
+################################################################################
+$(eval $(call addlib_s,libwamr,$(CONFIG_LIBWAMR)))
+
+################################################################################
+# Original sources
+################################################################################
+LIBWAMR_VERSION=2.4.1
+LIBWAMR_BASENAME=WAMR-$(LIBWAMR_VERSION)
+LIBWAMR_URL=https://github.com/bytecodealliance/wasm-micro-runtime/archive/refs/tags/$(LIBWAMR_BASENAME).tar.gz
+$(eval $(call fetch,libwamr,$(LIBWAMR_URL)))
+
+LIBWAMR_EXTRACTED=$(LIBWAMR_ORIGIN)/wasm-micro-runtime-$(LIBWAMR_BASENAME)
+
+
+CORE_ROOT := $(LIBWAMR_EXTRACTED)/core
+IWASM_ROOT := $(LIBWAMR_EXTRACTED)/core/iwasm
+SHARED_ROOT := $(LIBWAMR_EXTRACTED)/core/shared
+
+# Change it to THUMBV7M if you want to build for developerkit
+# Need to set this relative to UK_ARCH so that it changes with configuration
+WAMR_BUILD_TARGET := AARCH64
+WAMR_BUILD_PLATFORM := darwin
+
+ifeq (${WAMR_BUILD_TARGET}, X86_32)
+  GLOBAL_DEFINES += BUILD_TARGET_X86_32
+  INVOKE_NATIVE := invokeNative_ia32.s
+  AOT_RELOC := aot_reloc_x86_32.c
+else ifeq (${WAMR_BUILD_TARGET}, X86_64)
+  GLOBAL_DEFINES += BUILD_TARGET_X86_64
+  INVOKE_NATIVE := invokeNative_em64.s
+  AOT_RELOC := aot_reloc_x86_64.c
+else ifeq ($(findstring ARM,$(WAMR_BUILD_TARGET)), ARM)
+  GLOBAL_DEFINES += BUILD_TARGET_ARM
+  GLOBAL_DEFINES += BUILD_TARGET=\"$(WAMR_BUILD_TARGET)\"
+  INVOKE_NATIVE := invokeNative_arm.s
+  AOT_RELOC := aot_reloc_arm.c
+else ifeq ($(findstring AARCH64,$(WAMR_BUILD_TARGET)), AARCH64)
+  LIBWAMR_CFLAGS-y += -DBUILD_TARGET_AARCH64
+  LIBWAMR_CFLAGS-y += -DBUILD_TARGET=\"$(WAMR_BUILD_TARGET)\"
+  INVOKE_NATIVE := invokeNative_osx_universal.s
+  AOT_RELOC := aot_reloc_arm.c
+else ifeq ($(findstring THUMB,$(WAMR_BUILD_TARGET)), THUMB)
+  GLOBAL_DEFINES += BUILD_TARGET_THUMB
+  GLOBAL_DEFINES += BUILD_TARGET=\"$(WAMR_BUILD_TARGET)\"
+  INVOKE_NATIVE := invokeNative_thumb.s
+  AOT_RELOC := aot_reloc_thumb.c
+else
+  $(error Build target isn't set)
+endif
+
+# Enable Interpreter by default.
+WAMR_BUILD_INTERP := 0
+
+# Enable AOT by default.
+WAMR_BUILD_AOT := 0
+
+# Override the global heap usage
+ifndef WAMR_BUILD_GLOBAL_HEAP_POOL
+WAMR_BUILD_GLOBAL_HEAP_POOL=1
+endif
+LIBWAMR_CFLAGS-y += -DWASM_ENABLE_GLOBAL_HEAP_POOL=${WAMR_BUILD_GLOBAL_HEAP_POOL}
+
+# Override the global heap size for small devices
+ifndef WAMR_BUILD_GLOBAL_HEAP_SIZE
+WAMR_BUILD_GLOBAL_HEAP_SIZE = 262144 # 256 kB
+endif
+LIBWAMR_CFLAGS-y += -DWASM_GLOBAL_HEAP_SIZE=${WAMR_BUILD_GLOBAL_HEAP_SIZE}
+
+ifeq (${WAMR_BUILD_INTERP}, 1)
+LIBWAMR_CFLAGS-y += -DWASM_ENABLE_INTERP=1
+endif
+
+ifeq (${WAMR_BUILD_AOT}, 1)
+LIBWAMR_CFLAGS-y += -DWASM_ENABLE_AOT=1
+endif
+
+LIBWAMR_CFLAGS-y += -DBH_MALLOC=wasm_runtime_malloc
+LIBWAMR_CFLAGS-y += -DBH_FREE=wasm_runtime_free
+
+# ATTENTION HERE ----------------------<<<<<<<
+LIBWAMR_CFLAGS-y += -DWASM_ENABLE_LIBC_BUILTIN=1
+
+LIBWAMR_CINCLUDES-y += -I$(LIBWAMR_BASE)/include
+LIBWAMR_CINCLUDES-y += -I${CORE_ROOT} \
+                       -I${IWASM_ROOT}/aot/ \
+                       -I${IWASM_ROOT}/common \
+                       -I${IWASM_ROOT}/include \
+                       -I${IWASM_ROOT}/interpreter/ \
+                       -I${SHARED_ROOT}/include \
+                       -I${SHARED_ROOT}/platform/include \
+                       -I${SHARED_ROOT}/platform/$(WAMR_BUILD_PLATFORM) \
+                       -I${SHARED_ROOT}/utils \
+                       -I${SHARED_ROOT}/mem-alloc
+
+LIBWAMR_CFLAGS-y += -Wno-unused-parameter
+
+
+
+LIBWAMR_SRCS-y += ${SHARED_ROOT}/mem-alloc/mem_alloc.c \
+                  ${SHARED_ROOT}/mem-alloc/ems/ems_kfc.c \
+                  ${SHARED_ROOT}/mem-alloc/ems/ems_alloc.c \
+                  ${SHARED_ROOT}/mem-alloc/ems/ems_hmu.c \
+                  ${SHARED_ROOT}/utils/bh_assert.c \
+                  ${SHARED_ROOT}/utils/bh_bitmap.c \
+                  ${SHARED_ROOT}/utils/bh_common.c \
+                  ${SHARED_ROOT}/utils/bh_hashmap.c \
+                  ${SHARED_ROOT}/utils/bh_list.c \
+                  ${SHARED_ROOT}/utils/bh_leb128.c \
+                  ${SHARED_ROOT}/utils/bh_log.c \
+                  ${SHARED_ROOT}/utils/bh_queue.c \
+                  ${SHARED_ROOT}/utils/bh_vector.c \
+                  ${SHARED_ROOT}/utils/runtime_timer.c \
+                  ${IWASM_ROOT}/libraries/libc-builtin/libc_builtin_wrapper.c \
+                  ${IWASM_ROOT}/common/wasm_application.c \
+                  ${IWASM_ROOT}/common/wasm_runtime_common.c \
+                  ${IWASM_ROOT}/common/wasm_native.c \
+                  ${IWASM_ROOT}/common/wasm_exec_env.c \
+                  ${IWASM_ROOT}/common/wasm_loader_common.c \
+                  ${IWASM_ROOT}/common/wasm_memory.c \
+                  ${IWASM_ROOT}/common/wasm_c_api.c \
+                  ${IWASM_ROOT}/common/arch/${INVOKE_NATIVE}
+
+ifeq (${WAMR_BUILD_INTERP}, 1)
+LIBWAMR_SRCS-y +=  ${IWASM_ROOT}/interpreter/wasm_interp_classic.c \
+                   ${IWASM_ROOT}/interpreter/wasm_loader.c \
+                   ${IWASM_ROOT}/interpreter/wasm_runtime.c
+endif
+
+ifeq (${WAMR_BUILD_AOT}, 1)
+LIBWAMR_SRCS-y +=  ${IWASM_ROOT}/aot/aot_loader.c \
+                   ${IWASM_ROOT}/aot/arch/${AOT_RELOC} \
+                   ${IWASM_ROOT}/aot/aot_runtime.c \
+                   ${IWASM_ROOT}/aot/aot_intrinsic.c
+endif

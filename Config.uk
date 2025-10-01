@@ -1,0 +1,3 @@
+config LIBWAMR
+bool "lib wamr 2.4.1"
+default y
