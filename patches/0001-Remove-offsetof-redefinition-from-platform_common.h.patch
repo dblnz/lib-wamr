@@ -1,0 +1,36 @@
+From e6354691e8fed2c2a20ae45de0eed713b679c20c Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Doru=20Bl=C3=A2nzeanu?= <dblnz@pm.me>
+Date: Fri, 2 Jan 2026 17:16:04 +0000
+Subject: [PATCH] Remove offsetof redefinition from platform_common.h
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Signed-off-by: Doru Blânzeanu <dblnz@pm.me>
+---
+ core/shared/platform/include/platform_common.h | 9 ---------
+ 1 file changed, 9 deletions(-)
+
+diff --git a/core/shared/platform/include/platform_common.h b/core/shared/platform/include/platform_common.h
+index 28001af..146b9fd 100644
+--- a/core/shared/platform/include/platform_common.h
++++ b/core/shared/platform/include/platform_common.h
+@@ -89,15 +89,6 @@ BH_VPRINTF(const char *format, va_list ap);
+ 
+ #endif
+ 
+-/* Return the offset of the given field in the given type */
+-#ifndef offsetof
+-/* GCC 4.0 and later has the builtin. */
+-#if defined(__GNUC__) && __GNUC__ >= 4
+-#define offsetof(Type, field) __builtin_offsetof(Type, field)
+-#else
+-#define offsetof(Type, field) ((size_t)(&((Type *)0)->field))
+-#endif
+-#endif
+ 
+ typedef uint8_t uint8;
+ typedef int8_t int8;
+-- 
+2.51.0
+
