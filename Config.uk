@@ -1,3 +1,13 @@
-config LIBWAMR
-bool "lib wamr 2.4.1"
-default y
+menuconfig LIBWAMR
+	bool "wamr - Intel's WebAssembly Micro Runtime version 2.4.1"
+	default y
+	select LIBMUSL
+	select LIBLWIP
+	select LIBUKTIME
+	select UKUNISTD
+
+if LIBWAMR
+config LIBWAMR_MAIN_FUNCTION
+	bool "Provide main function"
+	default y
+endif
