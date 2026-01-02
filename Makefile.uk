@@ -21,8 +21,8 @@ SHARED_ROOT := $(LIBWAMR_EXTRACTED)/core/shared
 
 # Change it to THUMBV7M if you want to build for developerkit
 # Need to set this relative to UK_ARCH so that it changes with configuration
-WAMR_BUILD_TARGET := AARCH64
-WAMR_BUILD_PLATFORM := darwin
+WAMR_BUILD_TARGET := X86_64
+WAMR_BUILD_PLATFORM := linux
 
 ifeq (${WAMR_BUILD_TARGET}, X86_32)
   GLOBAL_DEFINES += BUILD_TARGET_X86_32
