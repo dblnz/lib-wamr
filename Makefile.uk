@@ -9,6 +9,7 @@ $(eval $(call addlib_s,libwamr,$(CONFIG_LIBWAMR)))
 LIBWAMR_VERSION=2.4.1
 LIBWAMR_BASENAME=WAMR-$(LIBWAMR_VERSION)
 LIBWAMR_URL=https://github.com/bytecodealliance/wasm-micro-runtime/archive/refs/tags/$(LIBWAMR_BASENAME).tar.gz
+LIBWAMR_PATCHDIR=$(LIBWAMR_BASE)/patches
 $(eval $(call fetch,libwamr,$(LIBWAMR_URL)))
 
 LIBWAMR_EXTRACTED=$(LIBWAMR_ORIGIN)/wasm-micro-runtime-$(LIBWAMR_BASENAME)
