@@ -52,10 +52,10 @@ else
 endif
 
 # Enable Interpreter by default.
-WAMR_BUILD_INTERP := 0
+WAMR_BUILD_INTERP := 1
 
 # Enable AOT by default.
-WAMR_BUILD_AOT := 0
+WAMR_BUILD_AOT := 1
 
 # Override the global heap usage
 ifndef WAMR_BUILD_GLOBAL_HEAP_POOL
@@ -91,18 +91,31 @@ LIBWAMR_CINCLUDES-y += -I${CORE_ROOT} \
                        -I${IWASM_ROOT}/interpreter/ \
                        -I${SHARED_ROOT}/include \
                        -I${SHARED_ROOT}/platform/include \
+                       -I${SHARED_ROOT}/platform/common/libc-util \
+                       -I${SHARED_ROOT}/platform/common/memory \
+                       -I${SHARED_ROOT}/platform/common/posix \
                        -I${SHARED_ROOT}/platform/$(WAMR_BUILD_PLATFORM) \
                        -I${SHARED_ROOT}/utils \
                        -I${SHARED_ROOT}/mem-alloc
 
 LIBWAMR_CFLAGS-y += -Wno-unused-parameter
 
-
-
 LIBWAMR_SRCS-y += ${SHARED_ROOT}/mem-alloc/mem_alloc.c \
                   ${SHARED_ROOT}/mem-alloc/ems/ems_kfc.c \
                   ${SHARED_ROOT}/mem-alloc/ems/ems_alloc.c \
                   ${SHARED_ROOT}/mem-alloc/ems/ems_hmu.c \
+                  ${SHARED_ROOT}/platform/common/libc-util/libc_errno.c \
+                  ${SHARED_ROOT}/platform/common/memory/mremap.c \
+                  ${SHARED_ROOT}/platform/common/posix/posix_blocking_op.c \
+                  ${SHARED_ROOT}/platform/common/posix/posix_clock.c \
+                  ${SHARED_ROOT}/platform/common/posix/posix_file.c \
+                  ${SHARED_ROOT}/platform/common/posix/posix_malloc.c \
+                  ${SHARED_ROOT}/platform/common/posix/posix_memmap.c \
+                  ${SHARED_ROOT}/platform/common/posix/posix_sleep.c \
+                  ${SHARED_ROOT}/platform/common/posix/posix_socket.c \
+                  ${SHARED_ROOT}/platform/common/posix/posix_thread.c \
+                  ${SHARED_ROOT}/platform/common/posix/posix_time.c \
+                  ${SHARED_ROOT}/platform/$(WAMR_BUILD_PLATFORM)/platform_init.c \
                   ${SHARED_ROOT}/utils/bh_assert.c \
                   ${SHARED_ROOT}/utils/bh_bitmap.c \
                   ${SHARED_ROOT}/utils/bh_common.c \
