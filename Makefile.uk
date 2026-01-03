@@ -96,11 +96,13 @@ LIBWAMR_CINCLUDES-y += -I${CORE_ROOT} \
                        -I${SHARED_ROOT}/platform/common/posix \
                        -I${SHARED_ROOT}/platform/$(WAMR_BUILD_PLATFORM) \
                        -I${SHARED_ROOT}/utils \
+                       -I${SHARED_ROOT}/utils/uncommon \
                        -I${SHARED_ROOT}/mem-alloc
 
 LIBWAMR_CFLAGS-y += -Wno-unused-parameter
 
-LIBWAMR_SRCS-y += ${SHARED_ROOT}/mem-alloc/mem_alloc.c \
+LIBWAMR_SRCS-y += ${LIBWAMR_BASE}/glue.c \
+                  ${SHARED_ROOT}/mem-alloc/mem_alloc.c \
                   ${SHARED_ROOT}/mem-alloc/ems/ems_kfc.c \
                   ${SHARED_ROOT}/mem-alloc/ems/ems_alloc.c \
                   ${SHARED_ROOT}/mem-alloc/ems/ems_hmu.c \
@@ -116,6 +118,8 @@ LIBWAMR_SRCS-y += ${SHARED_ROOT}/mem-alloc/mem_alloc.c \
                   ${SHARED_ROOT}/platform/common/posix/posix_thread.c \
                   ${SHARED_ROOT}/platform/common/posix/posix_time.c \
                   ${SHARED_ROOT}/platform/$(WAMR_BUILD_PLATFORM)/platform_init.c \
+                  ${SHARED_ROOT}/utils/uncommon/bh_getopt.c \
+                  ${SHARED_ROOT}/utils/uncommon/bh_read_file.c \
                   ${SHARED_ROOT}/utils/bh_assert.c \
                   ${SHARED_ROOT}/utils/bh_bitmap.c \
                   ${SHARED_ROOT}/utils/bh_common.c \
