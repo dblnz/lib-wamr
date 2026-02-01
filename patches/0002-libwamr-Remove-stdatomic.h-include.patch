@@ -1,0 +1,40 @@
+From 7523249dcd6de0f051e623b997817730ca0ee4f3 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Doru=20Bl=C3=A2nzeanu?= <dblnz@pm.me>
+Date: Sat, 3 Jan 2026 18:50:47 +0000
+Subject: [PATCH 2/2] libwamr: Remove stdatomic.h include
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Signed-off-by: Doru Blânzeanu <dblnz@pm.me>
+---
+ core/shared/platform/include/platform_api_extension.h | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/core/shared/platform/include/platform_api_extension.h b/core/shared/platform/include/platform_api_extension.h
+index d57d0ea..2083034 100644
+--- a/core/shared/platform/include/platform_api_extension.h
++++ b/core/shared/platform/include/platform_api_extension.h
+@@ -127,12 +127,19 @@ os_thread_exit(void *retval);
+ #endif /* end of defined(__GNUC_PREREQ) */
+ 
+ #if defined(BH_HAS_STD_ATOMIC) && !defined(__cplusplus)
++/* Comment this out because cannot include stdatomic.h
+ #include <stdatomic.h>
+ #define os_memory_order_acquire memory_order_acquire
+ #define os_memory_order_release memory_order_release
+ #define os_memory_order_seq_cst memory_order_seq_cst
+ #define os_atomic_thread_fence atomic_thread_fence
+ #define os_atomic_cmpxchg atomic_compare_exchange_strong
++*/
++
++#define os_memory_order_acquire __ATOMIC_ACQUIRE
++#define os_memory_order_release __ATOMIC_RELEASE
++#define os_memory_order_seq_cst __ATOMIC_SEQ_CST
++#define os_atomic_thread_fence __atomic_thread_fence
+ #endif
+ 
+ #endif /* end of os_atomic_thread_fence */
+-- 
+2.52.0
+
