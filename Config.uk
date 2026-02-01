@@ -10,4 +10,8 @@ if LIBWAMR
 config LIBWAMR_MAIN_FUNCTION
 	bool "Provide main function"
 	default y
+
+config LIBWAMR_BUILD_HEAP_POOL_SIZE
+    int "WAMR build heap pool size"
+    default 262144
 endif
