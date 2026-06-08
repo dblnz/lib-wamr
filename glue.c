@@ -10,6 +10,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <uk/config.h>
+
 #include "bh_platform.h"
 #include "bh_read_file.h"
 #include "wasm_export.h"
@@ -604,6 +606,7 @@ timeout_thread(void *vp)
 }
 #endif
 
+#if CONFIG_LIBWAMR_MAIN_FUNCTION
 int
 main(int argc, char *argv[])
 {
@@ -1127,3 +1130,4 @@ fail1:
 
     return ret;
 }
+#endif /* CONFIG_LIBWAMR_MAIN_FUNCTION */

@@ -102,6 +102,10 @@ LIBWAMR_CINCLUDES-y += -I${CORE_ROOT} \
                        -I${SHARED_ROOT}/mem-alloc
 
 LIBWAMR_CFLAGS-y += -Wno-unused-parameter
+# When CONFIG_LIBWAMR_MAIN_FUNCTION=n (an app provides its own main and embeds
+# WAMR directly), glue.c's main() is compiled out and its static helpers become
+# unused; keep that from breaking -Werror builds.
+LIBWAMR_CFLAGS-y += -Wno-unused-function
 
 LIBWAMR_SRCS-y += ${LIBWAMR_BASE}/glue.c \
                   ${SHARED_ROOT}/mem-alloc/mem_alloc.c \
