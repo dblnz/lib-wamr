@@ -670,6 +670,11 @@ main(int argc, char *argv[])
     memset(&wasi_parse_ctx, 0, sizeof(wasi_parse_ctx));
 #endif
 
+    /*
+     * Force unbuffered stdout.
+    */
+    setvbuf(stdout, NULL, _IONBF, 0);
+
     /* Process options. */
     for (argc--, argv++; argc > 0 && argv[0][0] == '-'; argc--, argv++) {
         if (!strcmp(argv[0], "-f") || !strcmp(argv[0], "--function")) {
